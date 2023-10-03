@@ -1,20 +1,23 @@
 import mongoose from "mongoose";
-//const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
+
+const { Schema } = mongoose;
+mongoose.Promise = global.Promise;
 
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   username: {
     type: String,
     required: true,
   },
   email: {
     type: String,
-    //required: true,
-    //unique: true,
+    required: true,
+    unique: true,
   },
   password: {
     type: String,
-    //required: true,
+    required: true,
   },
   userStatus: {
     type: Boolean,
@@ -34,10 +37,14 @@ const UserSchema = new mongoose.Schema({
  
 });
 
-// UserSchema.pre("save", function () {
-//   this.salt = bcrypt.genSaltSync();
-//   this.password = bcrypt.hashSync(this.password, this.salt);
-// });
+UserSchema.pre("save", function () {
+  this.salt = bcrypt.genSaltSync();
+  this.password = bcrypt.hashSync(this.password, this.salt);
+});
 
 
-export const UserModel = mongoose.model("User", UserSchema);
+
+
+const UserModel =   mongoose.models.User|| mongoose.model("User", UserSchema);
+
+export default UserModel;

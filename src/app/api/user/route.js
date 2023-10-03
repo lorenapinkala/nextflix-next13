@@ -1,29 +1,23 @@
-import { createUser } from "./postController";
-import { addFavorite } from "./postController";
-
-export default {
-    POST: {
-      '/api/user': createUser,
-      '/api/user/favorite': addFavorite,
-    },
-};
+import connectDB from '@/app/libs/connectDB'
+import { NextResponse } from 'next/server'
+import  UserModel  from '@/app/models/User'
 
 
+export const POST= async(req, res)=> {
 
-// //update a user
-// router.put("/update/:_id", UserController.updateUser);
+  await connectDB()
+  try{
+      const body = await req.json();
+      const newUser = await UserModel.create(body);
+      return NextResponse.json({newUser},{status:201})
+  }catch(error){
+      console.log(error)
+      NextResponse.json({data: null}, {status:500})
+  }
 
-// //unsubscribe a user
-// router.put("/unsubscribe/:_id", UserController.unsubscribeUser);
-
-// //get an user
-// router.get("/findone/:_id", UserController.findoneUser);
-
-// //get all users
-// router.get("/findall", UserController.findallUser);
-
-// //delete a movie from favorites-- id del usuario- id de la peli
-// router.delete("/unsuscribe/:_id/:movieId", UserController.removeMovie);
+}
 
 
-// router.get("/favorite/:_id", UserController.getFavorites);
+
+
+
