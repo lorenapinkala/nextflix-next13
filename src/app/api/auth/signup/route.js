@@ -12,6 +12,17 @@ export const POST = async (req, res) => {
   try {
     await connectDB();
     const body = await req.json();
+
+   
+    const existingUser = await UserModel.findOne({ email: body.email });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "The user with this email address already exists." },
+        { status: 400 }
+      );
+    }
+
     const user = await UserModel.create(body);
 
     if (user) {
@@ -33,14 +44,14 @@ export const POST = async (req, res) => {
       return NextResponse.json({ token, payload }, { status: 201 });
     } else {
       return NextResponse.json(
-        { error: "Unable to create the user" },
+        { error: "The user could not be created" },
         { status: 500 }
       );
     }
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "There was an issue processing the request" },
+      { error: "There was a problem processing the request." },
       { status: 500 }
     );
   }
