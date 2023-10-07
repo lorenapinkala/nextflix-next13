@@ -4,20 +4,21 @@ export const userSlice = createSlice({
   name: "user",
 
   initialState: {
-    user: null,
-    token: null,
+    data: {
+      _id: null,
+      username: "",
+      email: "",
+    },
   },
 
   reducers: {
     setUserCredentials: (state, action) => {
-      const { _id, username, email } = action.payload.payload;
-      const token = action.payload.token;
-      state.user = { _id, username, email };
-      state.token = token;
+      const { _id, username, email, token } = action.payload;
+      state.data.user = { _id, username, email };
+      state.data.token = token;
     },
     logOutUser: (state) => {
-      state.user = null;
-      state.token = null;
+      state.data = { user: null, token: null };
     },
   },
 });
@@ -27,6 +28,6 @@ export const { setUserCredentials, logOutUser } = userSlice.actions;
 export default userSlice.reducer;
 
 export const selectUserAndToken = (state) => ({
-  user: state.user.user,
-  token: state.user.token,
+  user: state.user.data.user,
+  token: state.user.data.token,
 });

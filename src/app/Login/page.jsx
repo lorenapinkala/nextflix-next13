@@ -1,30 +1,31 @@
 "use client"
 import { useForm } from 'react-hook-form';
-//import { useDispatch } from "react-redux";
-//import {loginUser} from "../state/ userActions"
+import { useDispatch } from "react-redux";
+import { loginUser } from '@/state/userActions';
 import { useEffect } from 'react';
-//import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation'
+import Providers from '@/state/provider';
 
-function Login() {
+function Login({user}) {
 
- // const navigate = useNavigate();
-  //const dispatch = useDispatch();
+  const router = useRouter()
+  const dispatch = useDispatch();
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmitLogin = async (data) => {
-    console.log("envio  mi login")
-    // const { confirm, ...cleanedData } = data;
-    // dispatch(loginUser(cleanedData));
+    
+    const { confirm, ...cleanedData } = data;
+    dispatch(loginUser(cleanedData));
   };
 
-//  useEffect(() => {
-//     if (user) {
-//       navigate('/');
-//     }
-//   }, [user]);
+ useEffect(() => {
+  const token = localStorage.getItem('token')
+  if (token) router.push('/')
+  }, [localStorage]);
 
 
   return (
+    <Providers>
     <div className='bg-zinc-500 h-[calc(100vh-5rem)]  flex flex-col justify-center items-center'>
       <h4 className='mb-3 text-black'>Log in and enjoin your favorite movies!</h4>
     <form className=' rounded-lg p-8 w-2/3 sm:w-1/3' onSubmit={handleSubmit(onSubmitLogin)}>
@@ -47,6 +48,7 @@ function Login() {
         </button>
       </form>
   </div>
+  </Providers>
   )
 }
 

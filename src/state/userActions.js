@@ -1,20 +1,29 @@
 import { setUserCredentials, logOutUser } from "./userSlice";
-import axios from "axios";
 
 export const loginUser = (credentials) => async (dispatch) => {
   try {
-    const url = `localhost:3000/api/auth/login`;
-    const response = await axios.post(url, credentials);
+    const url = "/api/auth/login";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
 
-    const { token } = response.data;
+    if (response.ok) {
+      const data = await response.json();
 
-    localStorage.setItem("token", token);
-   
+      const { token } = data;
+      localStorage.setItem("token", token);
 
-    dispatch(setUserCredentials(response.data));
-
+      dispatch(setUserCredentials(data));
+    } else {
+      console.error("Login error: ", response.statusText);
+      dispatch(logOutUser());
+    }
   } catch (error) {
-    console.error("Error en el inicio de sesión:", error);
+    console.error("Login error: ", error);
     dispatch(logOutUser());
   }
 };
@@ -24,34 +33,47 @@ export const setAuthenticatedUser = (user) => (dispatch) => {
 };
 
 export const getUser = () => async (dispatch) => {
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-  
-      if (!token) {
-        console.log("No se encontró un token de autenticación.");
-        return;
-      }
-  
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
+    if (!token) {
+      console.log("No authentication token found.");
+      return;
+    }
+
+    const url = "/api/auth/me";
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    });
+
+    if (response.ok) {
+      const userData = await response.json();
+
+      const user = {
+        _id: userData.user._id,
+        username: userData.user.username,
+        email: userData.user.email,
+        token: token,
       };
 
-      const response = await axios.get(`localhost:3000/api/auth/me`, config);
-      const {data}= response;
-
-      const user={payload:data, token}
-
       dispatch(setAuthenticatedUser(user));
-
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.log("La sesión ha expirado. Cerrar la sesión localmente.");
-        dispatch(logOutUser());
-      } else {
-        console.error("Error al obtener los datos del usuario:", error);
-      }
+    } else if (response.status === 401) {
+      console.log("The session has expired. Log out locally.");
+      dispatch(logOutUser());
+    } else {
+      console.error("Error fetching user data:", response.statusText);
     }
-  };
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.log("The session has expired. Log out locally.");
+      dispatch(logOutUser());
+    } else {
+      console.error("Error fetching user data:", error);
+    }
+  }
+};
