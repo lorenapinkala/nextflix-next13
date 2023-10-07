@@ -9,6 +9,9 @@ function Section() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.data.user);
 
+  const id = user ? user._id : null;
+
+
   useEffect(() => {
     if (!user) {
       dispatch(getUser());
@@ -16,7 +19,7 @@ function Section() {
   }, [user, dispatch]);
 
  const handleFavorites=()=>{
-  if(user){
+  if(id){
     console.log("holiiss, estos son los favorites")}
     else{
       alert("If you want to watch your favorite movies, log in.")

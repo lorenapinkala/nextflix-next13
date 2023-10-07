@@ -13,11 +13,11 @@ export const loginUser = (credentials) => async (dispatch) => {
 
     if (response.ok) {
       const data = await response.json();
-
+ 
       const { token } = data;
       localStorage.setItem("token", token);
 
-      dispatch(setUserCredentials(data));
+      dispatch(setUserCredentials(data.payload));
     } else {
       console.error("Login error: ", response.statusText);
       dispatch(logOutUser());

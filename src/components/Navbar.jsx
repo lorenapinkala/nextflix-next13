@@ -15,7 +15,8 @@ function Navbar() {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user.data.user);
-
+  const id = user ? user._id : null;
+  
 
   const handleSelect = (e) => {
     setSearch(e.target.value);
@@ -76,7 +77,7 @@ function Navbar() {
       </div>
 
       {/* Login and Registration Section*/}
-      {user ? (
+      {id  ? (
         <div className="flex justify-center items-center h-full w-1/6" ref={menuRef}>
           <FiLogOut className="text-3xl text-white hover:bg-slate-200 rounded" onClick={toggleMenu} />
           {isOpen && (

@@ -1,12 +1,12 @@
 "use client"
 import { useForm } from 'react-hook-form';
-import { useDispatch } from "react-redux";
+import { useDispatch,  useSelector} from "react-redux";
 import { loginUser } from '@/state/userActions';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation'
 import Providers from '@/state/provider';
 
-function Login({user}) {
+function Login() {
 
   const router = useRouter()
   const dispatch = useDispatch();
@@ -16,13 +16,8 @@ function Login({user}) {
     
     const { confirm, ...cleanedData } = data;
     dispatch(loginUser(cleanedData));
+    router.push('/')
   };
-
- useEffect(() => {
-  const token = localStorage.getItem('token')
-  if (token) router.push('/')
-  }, [localStorage]);
-
 
   return (
     <Providers>
